@@ -11,9 +11,11 @@ class Block:
 
 class Figure:
     def __init__(self, name):
+        self.block_3 = Block("img/green_3.png")
+        self.block_2 = Block("img/green_2.png")
+        self.block_1 = Block("img/green_1.png")
         self.default_scheme = self.get_default_scheme()
         self.current_scheme = [list(i) for i in self.default_scheme]
-        self.init_blocks()
         self.offset = 10
         self.pos = (0, 0)
         self.name = name
@@ -43,11 +45,6 @@ class Figure:
 
     def get_current_scheme(self):
         return self.current_scheme
-
-    def init_blocks(self):
-        self.block_1 = Block("img/green_1.png")
-        self.block_2 = Block("img/green_2.png")
-        self.block_3 = Block("img/green_3.png")
 
     def draw(self, screen, x, y):
         self.pos = (x, y)
@@ -417,8 +414,8 @@ class ButtonPanel:
         self.green_button.set_name("green")
         self.pink_button = Button("img/icons/pink_icon.png")
         self.pink_button.set_name("pink")
-        self.purple_button = Button("img/icons/purpul_icon.png")
-        self.purple_button.set_name("purpul")
+        self.purple_button = Button("img/icons/purple_icon.png")
+        self.purple_button.set_name("purple")
         self.blue_button = Button("img/icons/blue_icon.png")
         self.blue_button.set_name("blue")
         self.yellow_button = Button("img/icons/yellow_icon.png")
