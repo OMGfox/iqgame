@@ -5,21 +5,22 @@ import sys
 
 class Engine:
     def __init__(self, screen):
+        self.field = None
         self.offset_x = 10
         self.offset_y = 10
-        self.screen = screen 
+        self.screen = screen
         self.button_panel = ButtonPanel()
-        self.managment_button_panel = ManagementButtonPanel()
-        self.figures = [OrangeFigure("orange"), RedFigure("red"), 
-                        YellowFigure("yellow"), BlueFigure("blue"), 
-                        PurpulFigure("purpul"), PinkFigure("pink"), 
+        self.management_button_panel = ManagementButtonPanel()
+        self.figures = [OrangeFigure("orange"), RedFigure("red"),
+                        YellowFigure("yellow"), BlueFigure("blue"),
+                        PurpleFigure("purple"), PinkFigure("pink"),
                         GreenFigure("green")]
         self.focus = None
         self.next_figure()
         self.figures_on_field = []
 
     def get_offset(self):
-        return (self.offset_x, self.offset_y)
+        return self.offset_x, self.offset_y
 
     def next_figure(self):
         if self.focus:
@@ -30,7 +31,7 @@ class Engine:
                 print("There are no object in list")
         else:
             if len(self.figures):
-                self.focus = self.figures.pop() 
+                self.focus = self.figures.pop()
             else:
                 print("There are no object in list")
         if len(self.figures) > 0:
@@ -41,19 +42,18 @@ class Engine:
                     if button.get_name() == focus_name:
                         button.set_state("clicked")
                     else:
-                        button.set_state("unclicked")
+                        button.set_state("no_clicked")
 
     def is_out_field(self):
         result = False
-        mouse_pos = pygame.mouse.get_pos()        
+        mouse_pos = pygame.mouse.get_pos()
         if ((mouse_pos[0]) > (500 + self.offset_x) or
                 (mouse_pos[1]) > (500 + self.offset_y)):
             result = True
-        
+
         if (mouse_pos[0] < self.offset_x or
                 mouse_pos[1] < self.offset_y):
             result = True
- 
 
         return result
 
@@ -62,7 +62,7 @@ class Engine:
 
         if self.is_out_field():
             result = False
-        
+
         figure_scheme = self.focus.get_current_scheme()
         field_scheme = self.field.get_default_scheme()
 
@@ -73,32 +73,30 @@ class Engine:
         start_y_index = int((self.focus.get_pos()[0] + 50) / 100)
         if start_y_index > 5 - len(figure_scheme[0]):
             start_y_index = 5 - len(figure_scheme[0])
-        
+
         i_range = len(figure_scheme)
         j_range = len(figure_scheme[0])
         for i in range(i_range):
             for j in range(j_range):
                 if figure_scheme[i][j] == 0:
                     continue
-
                 x = i + start_x_index
                 y = j + start_y_index
-
-                if ((figure_scheme[i][j] == 1 and field_scheme[x][y] == 2) or 
+                if ((figure_scheme[i][j] == 1 and field_scheme[x][y] == 2) or
                         (figure_scheme[i][j] == 2 and field_scheme[x][y] == 1)):
                     result = False
                     break
         if self.is_across_figures():
-           result = False 
-                
+            result = False
+
         return result
-    
+
     def is_across_figures(self):
         result = False
         matrix = list()
         for figure in self.figures_on_field:
             [matrix.append(i) for i in figure.get_matrix_pos()]
-        
+
         for i in self.focus.get_matrix_pos():
             if i in matrix:
                 result = True
@@ -137,7 +135,7 @@ class Engine:
     def get_from_field(self):
         for figure in self.figures_on_field:
             if figure.is_mouseover():
-                figure_name = figure.get_name() 
+                figure_name = figure.get_name()
                 self.focus = self.pull_figure_from_field_by_name(figure_name)
                 for button in self.button_panel.get_buttons():
                     if button.get_name() == figure_name:
@@ -146,28 +144,26 @@ class Engine:
 
     def button_actions_processing(self):
         buttons = self.button_panel.get_buttons()
-        mouse_pos = pygame.mouse.get_pos()
         mouseover_button = None
         for button in buttons:
             if button.is_mouseover() and button.is_visible():
                 mouseover_button = button
                 break
-       
+
         if mouseover_button:
             mouseover_button_state = mouseover_button.get_state()
             self.clear_focus()
             for button in buttons:
-                button.set_state("unclicked")
-                
-            if mouseover_button_state == "unclicked":               
+                button.set_state("no_clicked")
+
+            if mouseover_button_state == "no_clicked":
                 mouseover_button.set_state("clicked")
-                self.focus = self.pull_figure_by_name(mouseover_button.get_name()) 
-            elif mouseover_button_state == "clicked":               
-                mouseover_button.set_state("unclicked")          
+                self.focus = self.pull_figure_by_name(mouseover_button.get_name())
+            elif mouseover_button_state == "clicked":
+                mouseover_button.set_state("no_clicked")
 
     def management_button_actions_processing(self):
-        buttons = self.managment_button_panel.get_buttons()
-        mouse_pos = pygame.mouse.get_pos()
+        buttons = self.management_button_panel.get_buttons()
         mouseover_button = None
         for button in buttons:
             if button.is_mouseover() and button.is_visible():
@@ -185,12 +181,12 @@ class Engine:
                 self.clear_focus()
             elif mouseover_button_name == "exit":
                 sys.exit(0)
- 
+
     def pull_figure_by_name(self, name):
         for i in range(len(self.figures)):
             if self.figures[i].get_name() == name:
                 return self.figures.pop(i)
-    
+
     def pull_figure_from_field_by_name(self, name):
         for i in range(len(self.figures_on_field)):
             if self.figures_on_field[i].get_name() == name:
@@ -220,8 +216,8 @@ class Engine:
             else:
                 figure_w = len(self.focus.get_current_scheme()[0]) * 100
                 figure_h = len(self.focus.get_current_scheme()) * 100
-                self.focus.draw(self.screen, 250 - figure_w / 2, 
-                        250 - figure_h / 2)
+                self.focus.draw(self.screen, 250 - figure_w / 2,
+                                250 - figure_h / 2)
                 self.field.reset_default_scheme()
 
         elif self.field:
@@ -242,15 +238,14 @@ class Engine:
         self.screen.blit(background, (0, 0))
 
     def draw_management_buttons(self):
-        self.managment_button_panel.draw(self.screen, 520, 300)
- 
+        self.management_button_panel.draw(self.screen, 520, 300)
+
     def draw_buttons(self):
         self.button_panel.draw(self.screen, 520, 20)
 
     def set_to_field(self):
         if self.focus and not self.is_out_field():
             if self.is_correct_position():
-                
                 w = len(self.focus.get_current_scheme()[0])
                 h = len(self.focus.get_current_scheme())
                 x = self.focus.get_pos()[0]
@@ -260,13 +255,11 @@ class Engine:
                     x = (500 + self.offset_x) - w * 100
                 if (y + h * 100) > (500 + self.offset_y):
                     y = (500 + self.offset_y) - h * 100
-                
-                self.focus.set_pos(x, y)
 
+                self.focus.set_pos(x, y)
                 self.figures_on_field.append(self.focus)
                 self.focus = None
                 self.field.reset_default_scheme()
-#                self.next_figure()
 
                 buttons = self.button_panel.get_buttons()
                 for figure in self.figures_on_field:
@@ -284,7 +277,7 @@ class Engine:
             buttons = self.button_panel.get_buttons()
             for button in buttons:
                 if button.get_name() == focus_name:
-                    button.state = "unclicked"
+                    button.state = "no_clicked"
 
     def clear_field(self):
         for i in range(len(self.figures_on_field)):
@@ -292,7 +285,7 @@ class Engine:
         if not self.focus:
             self.next_figure()
         self.button_panel.reset_visibility()
-        
+
     def set_field(self, field):
         self.field = field
 
@@ -306,4 +299,3 @@ class Engine:
     def turn_focus(self):
         if self.focus:
             self.focus.turn()
-
